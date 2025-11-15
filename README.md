@@ -74,8 +74,6 @@ cd frontend-web
 ## Contributing
 This project is part of the FOSSEE Winter Internship screening task.
 
-## License
-TBD
 
 ## Contact
 - Developer: [Your Name]
