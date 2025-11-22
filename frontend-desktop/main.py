@@ -25,6 +25,8 @@ from PyQt5.QtWidgets import (
     QTableWidgetItem,
     QVBoxLayout,
     QWidget,
+    QDialog,
+    QDialogButtonBox,
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -34,11 +36,41 @@ API_USERNAME = os.getenv("API_USERNAME")
 API_PASSWORD = os.getenv("API_PASSWORD")
 
 
-def build_auth_headers():
+class CredentialDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle("Enter API Credentials")
+        layout = QVBoxLayout(self)
+        layout.addWidget(QLabel("Enter the Django admin username/password for the API."))
+        self.username_input = QLineEdit()
+        self.username_input.setPlaceholderText("Username")
+        self.password_input = QLineEdit()
+        self.password_input.setEchoMode(QLineEdit.Password)
+        self.password_input.setPlaceholderText("Password")
+        layout.addWidget(self.username_input)
+        layout.addWidget(self.password_input)
+        buttons = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        buttons.accepted.connect(self.accept)
+        buttons.rejected.connect(self.reject)
+        layout.addWidget(buttons)
+
+    def get_credentials(self):
+        return self.username_input.text().strip(), self.password_input.text().strip()
+
+
+def build_auth_headers(parent=None):
+    global API_USERNAME, API_PASSWORD
     if not API_USERNAME or not API_PASSWORD:
-        raise RuntimeError(
-            "Set API_USERNAME and API_PASSWORD environment variables for Basic Auth."
-        )
+        dialog = CredentialDialog(parent)
+        if dialog.exec_() == QDialog.Accepted:
+            username, password = dialog.get_credentials()
+            if not username or not password:
+                raise RuntimeError("Username and password are required for Basic Auth.")
+            API_USERNAME, API_PASSWORD = username, password
+        else:
+            raise RuntimeError(
+                "Set API_USERNAME and API_PASSWORD env vars or provide them when prompted."
+            )
     token = base64.b64encode(f"{API_USERNAME}:{API_PASSWORD}".encode()).decode()
     return {"Authorization": f"Basic {token}"}
 
@@ -160,7 +192,7 @@ class DatasetDashboard(QMainWindow):
             QMessageBox.warning(self, "Missing File", "Please choose a CSV file.")
             return
         try:
-            headers = build_auth_headers()
+            headers = build_auth_headers(self)
             with open(file_path, "rb") as file_handle:
                 files = {"file": file_handle}
                 data = {}
@@ -181,7 +213,7 @@ class DatasetDashboard(QMainWindow):
 
     def refresh_dashboard(self):
         try:
-            headers = build_auth_headers()
+            headers = build_auth_headers(self)
         except RuntimeError as exc:
             QMessageBox.critical(self, "Auth Missing", str(exc))
             return
@@ -274,7 +306,7 @@ class DatasetDashboard(QMainWindow):
             return
         dataset = selected.data(Qt.UserRole)
         try:
-            headers = build_auth_headers()
+            headers = build_auth_headers(self)
             response = requests.get(
                 f"{API_BASE_URL}/datasets/{dataset['id']}/report/",
                 headers=headers,

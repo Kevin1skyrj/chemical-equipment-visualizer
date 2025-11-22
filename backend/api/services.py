@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import io
+import json
 from pathlib import Path
 from typing import BinaryIO, Dict, Tuple
 
@@ -58,7 +59,8 @@ def _compute_metrics(df: pd.DataFrame) -> Tuple[Dict, Dict]:
         "avg_pressure": round(df["pressure"].mean(), 2),
         "avg_temperature": round(df["temperature"].mean(), 2),
     }
-    type_distribution = df["equipment_type"].value_counts().sort_index().to_dict()
+    raw_distribution = df["equipment_type"].value_counts().sort_index().to_dict()
+    type_distribution = {str(key): int(value) for key, value in raw_distribution.items()}
 
     def _extreme(column: str, agg_func: str) -> Dict:
         idx_func = df[column].idxmax if agg_func == "max" else df[column].idxmin
@@ -67,7 +69,7 @@ def _compute_metrics(df: pd.DataFrame) -> Tuple[Dict, Dict]:
         return {
             "equipment_name": row["equipment_name"],
             "equipment_type": row["equipment_type"],
-            column: row[column],
+            column: float(row[column]),
         }
 
     metrics = {
@@ -88,7 +90,7 @@ def create_dataset_from_file(*, file_obj: BinaryIO, name: str | None = None) -> 
 
     df = _load_dataframe(raw_bytes)
     totals, metrics = _compute_metrics(df)
-    records = df.to_dict(orient="records")
+    records = json.loads(df.to_json(orient="records"))
 
     safe_filename = Path(getattr(file_obj, "name", "uploaded.csv")).name
     display_name = name or Path(safe_filename).stem.replace("_", " ").title()
