@@ -81,11 +81,44 @@ python main.py
 ```
 > On macOS/Linux replace the environment variable commands with `export`.
 
-## Features
-- Upload CSV files from either frontend (React or PyQt5) to a shared Django backend.
-- Backend analytics via Pandas (averages, distribution, extreme values) stored for the latest 5 datasets.
-- Chart-ready REST API responses for Chart.js (web) and Matplotlib (desktop).
-- PDF report generation endpoint plus basic authentication for secure submissions.
+## Feature Checklist (matches screening brief)
+1. **CSV Upload (Web + Desktop)** &mdash; both clients send multipart CSVs to `/api/datasets/upload/`.
+2. **Data Summary API** &mdash; backend computes totals, averages, and distribution for every dataset.
+3. **Visualization** &mdash; React uses Chart.js + tables, PyQt5 uses Matplotlib + Qt tables.
+4. **History Management** &mdash; model enforces “last five uploads only” after every save.
+5. **PDF + Basic Auth** &mdash; `/api/datasets/<id>/report/` streams a ReportLab PDF and DRF enforces HTTP Basic authentication globally.
+6. **Sample CSV workflow** &mdash; `python manage.py seed_sample_data` ingests `sample_equipment_data.csv` for immediate demos.
+
+> ✅ All mandatory features from the PDF are implemented and covered by either automated tests or documented manual steps.
+
+## Demo & Recording Guide
+Use these steps when capturing screenshots or the final walk-through video:
+
+1. **Start backend**: `cd backend && .\.venv\Scripts\Activate.ps1 && python manage.py runserver`.
+2. **Seed sample data** (optional if already done): `python manage.py seed_sample_data`.
+3. **Web app**:
+	- `cd frontend-web && npm install && npm run dev`.
+	- In the “Backend Authentication” card enter your Django username/password and click *Save Credentials*.
+	- Upload `sample_equipment_data.csv`, show the summary cards, Chart.js bar chart, records table, PDF download, and history refresh.
+4. **Desktop app**:
+	- `cd frontend-desktop && .\.venv\Scripts\Activate.ps1 && pip install -r requirements.txt && python main.py`.
+	- When the credentials dialog appears, enter the same username/password.
+	- Demonstrate loading the seeded dataset, uploading a new CSV, viewing metrics, and saving a PDF report.
+5. Conclude the recording by showing the backend logs (confirming authenticated requests) and mentioning Basic Auth usage.
+
+## Deployment Prep (for later)
+1. **Backend**
+	- Set `DEBUG=False`, `ALLOWED_HOSTS`, and production `SECRET_KEY` in environment variables.
+	- Configure static collection (`python manage.py collectstatic`) and persistent media storage (S3/Azure Blob/local volume).
+	- Provide Basic Auth credentials via environment variables or the target platform’s secret store.
+2. **Web Frontend**
+	- Set `VITE_API_BASE_URL` to the deployed API URL, rebuild with `npm run build`, and deploy the `dist/` folder (Vercel, Netlify, Azure Static Web Apps, etc.).
+3. **Desktop Client**
+	- Update `.env`/system variables (or rely on the runtime prompt) with the public API URL and production credentials.
+4. **Verification**
+	- Run `python manage.py test`, `npm run build`, and a full manual smoke test before sharing the live link.
+5. **Submission**
+	- Include the GitHub repo URL, hosted web URL, API Base URL, desktop demo video, and credentials (shared privately) in the screening form.
 
 ## Development
 
