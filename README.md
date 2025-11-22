@@ -50,6 +50,13 @@ python manage.py runserver
 
 > Every API call requires HTTP Basic authentication. Use the credentials you created via `createsuperuser`. Frontend apps should store them in environment variables and send the `Authorization` header with each request.
 
+### Demo Credentials / Sharing Access
+
+- Run `python manage.py createsuperuser --username demo_admin` (replace `demo_admin` with any label you like) and set a password that you can share privately.
+- Use the same username/password pair inside both the web dashboard (credentials card) and the desktop client (either via environment variables or the credential prompt).
+- When submitting the screening task, include these demo credentials in your submission so evaluators can log in immediately without recreating users.
+- Rotate or delete the demo account after the review period if you continue working on the project.
+
 ### Environment Variables
 
 | Component | Keys |
