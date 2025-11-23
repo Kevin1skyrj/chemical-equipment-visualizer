@@ -50,6 +50,15 @@ python manage.py runserver
 
 > Every API call requires HTTP Basic authentication. Use the credentials you created via `createsuperuser`. Frontend apps should store them in environment variables and send the `Authorization` header with each request.
 
+### Local Quickstart (what I run before each test)
+1. `cd backend && .\.venv\Scripts\Activate.ps1`
+2. `python manage.py createsuperuser` — create the reviewer account (`admin/AdminPassword123!` or any pair you like).
+3. `python manage.py seed_sample_data --username <your-user>` — preloads `sample_equipment_data.csv` so the dashboard has something to render immediately.
+4. `python manage.py runserver` — leave this tab running.
+5. In a new terminal: `cd frontend-web && npm install && npm run dev`.
+6. Visit `http://localhost:5173`, sign in with the credentials from step 2, upload a CSV, view the charts/history, and download the PDF.
+7. Use the **Signed in as … · Sign out** chip in the top-right of the dashboard whenever you want to switch accounts or clear saved credentials.
+
 ### Demo Credentials / Sharing Access
 
 - Run `python manage.py createsuperuser --username demo_admin` (replace `demo_admin` with any label you like) and set a password that you can share privately.
@@ -61,7 +70,7 @@ python manage.py runserver
 
 - The dashboard is gated behind a dedicated login page. Enter your Django credentials (or rely on `VITE_API_USERNAME`/`VITE_API_PASSWORD` during deployments) and click **Sign In**. Values live only in the current browser profile.
 - Each dataset belongs to the authenticated Django user. The API, web dashboard, and desktop client always filter responses to "your" uploads and keep the five most recent datasets **per user**.
-- The login page shows two tips: hosted builds list the reviewer credentials that were bundled at build time, and local builds remind you to run `python manage.py createsuperuser`. Use the **Sign out** button in the dashboard header if you need to switch accounts.
+- The login page shows two tips: hosted builds list the reviewer credentials that were bundled at build time, and local builds remind you to run `python manage.py createsuperuser`. The dashboard now highlights your current identity in the header ("Signed in as …") with a one-click **Sign out** action so you can switch users quickly.
 
 ### Environment Variables
 

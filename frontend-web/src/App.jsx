@@ -54,9 +54,14 @@ const App = () => {
             <button
               type="button"
               onClick={handleSignOut}
-              className="text-sm text-blue-700 hover:text-blue-900 font-medium"
+              className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-white/90 px-4 py-1.5 text-sm font-semibold text-blue-700 shadow-sm transition hover:border-blue-400 hover:bg-white hover:text-blue-900"
             >
-              Sign out ({credentials.username})
+              <span className="h-2 w-2 rounded-full bg-green-500" aria-hidden="true" />
+              Signed in as {credentials.username}
+              <span className="text-gray-400" aria-hidden="true">
+                ·
+              </span>
+              <span className="underline">Sign out</span>
             </button>
           </div>
         )}
