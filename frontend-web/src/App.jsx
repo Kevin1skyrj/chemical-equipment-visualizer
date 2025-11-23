@@ -3,6 +3,7 @@ import UploadForm from './components/UploadForm'
 import LatestSummary from './components/LatestSummary'
 import HistoryList from './components/HistoryList'
 import CredentialsForm from './components/CredentialsForm'
+import LoginScreen from './components/LoginScreen'
 import useDatasets from './hooks/useDatasets.js'
 import useAuth from './hooks/useAuth.js'
 import { API_BASE_URL } from './lib/api.js'
@@ -15,12 +16,13 @@ const App = () => {
     credentials?.username && credentials?.password
       ? `${credentials.username}:${credentials.password}`
       : null
-  const { latest, history, isLoading, error, refresh } = useDatasets(authKey)
+  const isAuthenticated = Boolean(authKey)
+  const { latest, history, isLoading, error, refresh } = useDatasets(isAuthenticated ? authKey : null)
   const [hasUploaded, setHasUploaded] = useState(() => {
     if (typeof window === 'undefined') return false
     return localStorage.getItem(HAS_UPLOAD_KEY) === 'true'
   })
-  const canUpload = Boolean(authKey)
+  const canUpload = isAuthenticated
 
   const latestForViewer = useMemo(() => (hasUploaded ? latest : null), [hasUploaded, latest])
 
@@ -30,6 +32,10 @@ const App = () => {
     }
     setHasUploaded(true)
     refresh()
+  }
+
+  if (!isAuthenticated) {
+    return <LoginScreen apiBaseUrl={API_BASE_URL} onSave={saveCredentials} />
   }
 
   return (
