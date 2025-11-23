@@ -46,7 +46,7 @@ const CredentialsForm = ({ credentials, onSave, onClear, onRefresh }) => {
               onClear?.()
               setStatus({ success: false, message: 'Credentials cleared.' })
             }}
-            className="text-sm text-red-600 border border-red-200 rounded px-3 py-1 hover:bg-red-50"
+            className="text-sm text-red-600 border border-red-200 rounded px-3 py-1 hover:bg-red-50 cursor-pointer"
           >
             Clear
           </button>
@@ -76,7 +76,7 @@ const CredentialsForm = ({ credentials, onSave, onClear, onRefresh }) => {
         <div className="md:col-span-2 flex items-center gap-3">
           <button
             type="submit"
-            className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
+            className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
           >
             Save Credentials
           </button>

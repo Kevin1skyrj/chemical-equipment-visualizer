@@ -50,7 +50,7 @@ const HistoryList = ({ history = [], onRefresh }) => {
         <h2 className="text-lg font-semibold">Upload History</h2>
         <button
           onClick={onRefresh}
-          className="text-sm text-blue-600 hover:text-blue-700"
+          className="text-sm text-blue-600 hover:text-blue-700 cursor-pointer font-medium"
         >
           Refresh
         </button>
@@ -76,14 +76,14 @@ const HistoryList = ({ history = [], onRefresh }) => {
             <div className="flex flex-wrap gap-2 mt-3">
               <button
                 onClick={() => handleSelectDataset(dataset)}
-                className="text-sm px-3 py-1.5 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors"
+                className="text-sm px-3 py-1.5 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors cursor-pointer"
               >
                 View Detail
               </button>
               <button
                 onClick={() => handleDownload(dataset)}
                 disabled={downloadingIds.has(dataset.id)}
-                className="text-sm px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-60"
+                className="text-sm px-3 py-1.5 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 disabled:opacity-60 disabled:cursor-not-allowed transition-colors cursor-pointer"
               >
                 {downloadingIds.has(dataset.id) ? 'Preparing…' : 'PDF Report'}
               </button>

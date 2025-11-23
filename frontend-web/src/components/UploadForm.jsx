@@ -79,7 +79,7 @@ const UploadForm = ({ onUploaded, disabled = false, disabledMessage = '' }) => {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="px-3 py-2 border border-gray-300 rounded bg-white hover:bg-gray-50"
+              className="px-3 py-2 border border-gray-300 rounded bg-white hover:bg-gray-50 cursor-pointer"
             >
               Choose File
             </button>
@@ -93,7 +93,7 @@ const UploadForm = ({ onUploaded, disabled = false, disabledMessage = '' }) => {
         <button
           type="submit"
           disabled={isSubmitting || disabled}
-          className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
+          className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm cursor-pointer"
         >
           {isSubmitting ? 'Uploading…' : 'Upload'}
         </button>
