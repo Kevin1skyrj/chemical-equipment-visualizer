@@ -132,15 +132,34 @@ Use these steps when capturing screenshots or the final walk-through video:
 1. **Backend**
 	- Set `DEBUG=False`, `ALLOWED_HOSTS`, and production `SECRET_KEY` in environment variables.
 	- Configure static collection (`python manage.py collectstatic`) and persistent media storage (S3/Azure Blob/local volume).
-	- Provide Basic Auth credentials via environment variables or the target platform’s secret store.
+	- Provide Basic Auth credentials via environment variables or the target platform’s secret store (`DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_PASSWORD`, `DJANGO_SUPERUSER_EMAIL`). The `ensure_superuser` management command executes at startup so the reviewer account is recreated/reset automatically.
 2. **Web Frontend**
 	- Set `VITE_API_BASE_URL` to the deployed API URL, rebuild with `npm run build`, and deploy the `dist/` folder (Vercel, Netlify, Azure Static Web Apps, etc.).
+	- Optional but recommended: set `VITE_API_USERNAME` / `VITE_API_PASSWORD` so the hosted login page is prefilled for reviewers (they still must click **Sign In**).
 3. **Desktop Client**
 	- Update `.env`/system variables (or rely on the runtime prompt) with the public API URL and production credentials.
 4. **Verification**
 	- Run `python manage.py test`, `npm run build`, and a full manual smoke test before sharing the live link.
 5. **Submission**
 	- Include the GitHub repo URL, hosted web URL, API Base URL, desktop demo video, and credentials (shared privately) in the screening form.
+
+### Cloud Workflow (Render + Vercel)
+1. **Deploy backend (Render)**
+	1. Push commits to `main`.
+	2. Render runs the build command `pip install -r requirements.txt && python manage.py collectstatic --no-input && python manage.py migrate`.
+	3. When Gunicorn starts, `api.apps.ApiConfig.ready()` runs `python manage.py ensure_superuser`, which reads the `DJANGO_SUPERUSER_*` env vars and creates/updates the reviewer account.
+	4. Verify credentials from your terminal:
+		```powershell
+		curl -u admin:AdminPassword123! https://chemical-equipment-visualizer-batm.onrender.com/api/datasets/history/
+		```
+		If you see JSON (even `[]`), the backend is ready.
+
+2. **Deploy frontend (Vercel)**
+	1. Redeploy the `chemical-equipment-visualizer-inky` project after every backend deploy so it picks up the latest `.env` values (`VITE_API_BASE_URL`, `VITE_API_USERNAME`, `VITE_API_PASSWORD`).
+	2. Open the live site, click “Sign out” to clear any cached credentials, and click **Sign In** with the prefilled reviewer values.
+	3. Upload `sample_equipment_data.csv`, confirm the summary/history refresh, and download a PDF from the history card.
+
+> If a reviewer reports “Invalid username/password,” run the curl check above. If curl succeeds, redeploy Vercel so the bundle picks up the correct env vars; if curl fails, redeploy Render with the desired `DJANGO_SUPERUSER_*` secrets.
 
 ## Development
 
