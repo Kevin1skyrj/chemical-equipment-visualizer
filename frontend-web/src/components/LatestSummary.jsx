@@ -28,7 +28,7 @@ const LatestSummary = ({ dataset, isLoading, error }) => {
   }
 
   return (
-    <section className="bg-white rounded-lg border border-gray-100 shadow-sm p-4 space-y-4">
+    <section className="bg-white rounded-xl border border-gray-100 shadow-lg p-6 space-y-6">
       <header>
         <p className="text-sm text-gray-500">
           Uploaded on {new Date(dataset.uploaded_at).toLocaleString()}

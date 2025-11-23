@@ -3,12 +3,12 @@ import { useState } from 'react'
 
 const HistoryList = ({ history = [], onRefresh }) => {
   const [selectedDataset, setSelectedDataset] = useState(null)
-  const [isDownloading, setIsDownloading] = useState(false)
+  const [downloadingIds, setDownloadingIds] = useState(new Set())
   const [error, setError] = useState('')
 
   const handleDownload = async (dataset) => {
     try {
-      setIsDownloading(true)
+      setDownloadingIds((prev) => new Set(prev).add(dataset.id))
       const blob = await downloadDatasetReport(dataset.id)
       const url = window.URL.createObjectURL(blob)
       const link = document.createElement('a')
@@ -22,7 +22,11 @@ const HistoryList = ({ history = [], onRefresh }) => {
     } catch (err) {
       setError(err.message)
     } finally {
-      setIsDownloading(false)
+      setDownloadingIds((prev) => {
+        const next = new Set(prev)
+        next.delete(dataset.id)
+        return next
+      })
     }
   }
 
@@ -41,7 +45,7 @@ const HistoryList = ({ history = [], onRefresh }) => {
   }
 
   return (
-    <section className="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
+    <section className="bg-white rounded-xl shadow-lg border border-gray-100 p-6">
       <header className="flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold">Upload History</h2>
         <button
@@ -58,8 +62,8 @@ const HistoryList = ({ history = [], onRefresh }) => {
         {history.map((dataset) => (
           <article
             key={dataset.id}
-            className={`border rounded-lg p-3 ${
-              selectedDataset?.id === dataset.id ? 'border-blue-500' : 'border-gray-200'
+            className={`border rounded-xl p-4 transition-all hover:shadow-md ${
+              selectedDataset?.id === dataset.id ? 'border-blue-500 bg-blue-50' : 'border-gray-200 hover:border-gray-300'
             }`}
           >
             <p className="text-sm text-gray-500">
@@ -72,16 +76,16 @@ const HistoryList = ({ history = [], onRefresh }) => {
             <div className="flex flex-wrap gap-2 mt-3">
               <button
                 onClick={() => handleSelectDataset(dataset)}
-                className="text-sm px-3 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50"
+                className="text-sm px-3 py-1.5 border border-blue-600 text-blue-600 rounded-lg font-medium hover:bg-blue-50 transition-colors"
               >
                 View Detail
               </button>
               <button
                 onClick={() => handleDownload(dataset)}
-                disabled={isDownloading}
+                disabled={downloadingIds.has(dataset.id)}
                 className="text-sm px-3 py-1 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-60"
               >
-                {isDownloading ? 'Preparing…' : 'PDF Report'}
+                {downloadingIds.has(dataset.id) ? 'Preparing…' : 'PDF Report'}
               </button>
             </div>
           </article>

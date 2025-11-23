@@ -32,14 +32,16 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <header>
-          <p className="text-sm uppercase tracking-wide text-blue-600 font-semibold">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-5xl mx-auto space-y-8">
+        <header className="text-center space-y-2 mb-4">
+          <p className="text-xs uppercase tracking-widest text-blue-600 font-semibold">
             Chemical Equipment Parameter Visualizer
           </p>
-          <h1 className="text-3xl font-bold">Hybrid Web + Desktop Dashboard</h1>
-          <p className="text-gray-600">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 tracking-tight">
+            Hybrid Web + Desktop Dashboard
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
             Upload CSV files, review analytics, and download PDF insights.
           </p>
         </header>

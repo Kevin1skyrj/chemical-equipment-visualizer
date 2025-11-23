@@ -17,7 +17,7 @@ const CredentialsForm = ({ credentials, onSave, onClear, onRefresh }) => {
   }
 
   return (
-    <section className="bg-white border border-blue-100 rounded-lg p-4 shadow-sm">
+    <section className="bg-white border border-blue-100 rounded-xl p-6 shadow-lg">
       <header className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-blue-600 font-semibold">
@@ -76,7 +76,7 @@ const CredentialsForm = ({ credentials, onSave, onClear, onRefresh }) => {
         <div className="md:col-span-2 flex items-center gap-3">
           <button
             type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+            className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm"
           >
             Save Credentials
           </button>

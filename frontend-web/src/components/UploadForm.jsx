@@ -51,7 +51,7 @@ const UploadForm = ({ onUploaded, disabled = false, disabledMessage = '' }) => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white shadow-sm rounded-lg p-4 border border-gray-100"
+      className="bg-white shadow-lg rounded-xl p-6 border border-gray-100"
     >
       <h2 className="text-lg font-semibold mb-3">Upload CSV</h2>
       <div className="grid gap-3 md:grid-cols-2">
@@ -93,7 +93,7 @@ const UploadForm = ({ onUploaded, disabled = false, disabledMessage = '' }) => {
         <button
           type="submit"
           disabled={isSubmitting || disabled}
-          className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+          className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 transition-colors shadow-sm"
         >
           {isSubmitting ? 'Uploading…' : 'Upload'}
         </button>
