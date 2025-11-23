@@ -3,7 +3,7 @@ import {
   clearAuthCredentials,
   getAuthCredentials,
   setAuthCredentials,
-} from '../lib/authStore.js'
+} from '../lib/authStore'
 
 const useAuth = () => {
   const [credentials, setCredentials] = useState(() => getAuthCredentials())

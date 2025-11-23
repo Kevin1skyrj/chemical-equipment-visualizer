@@ -1,4 +1,4 @@
-import { downloadDatasetReport, getDatasetDetail } from '../lib/api.js'
+import { downloadDatasetReport, getDatasetDetail } from '../lib/api'
 import { useState } from 'react'
 
 const HistoryList = ({ history = [], onRefresh }) => {

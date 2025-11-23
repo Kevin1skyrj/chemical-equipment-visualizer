@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getDatasetHistory, getLatestDataset } from '../lib/api.js'
+import { getDatasetHistory, getLatestDataset } from '../lib/api'
 
 const initialState = {
   latest: null,
