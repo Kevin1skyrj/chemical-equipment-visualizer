@@ -148,6 +148,8 @@ Use these steps when capturing screenshots or the final walk-through video:
 ```bash
 cd backend
 .\.venv\Scripts\Activate.ps1
+python manage.py createsuperuser  # create or update the reviewer account
+python manage.py seed_sample_data --username <your-user>
 python manage.py runserver
 ```
 
