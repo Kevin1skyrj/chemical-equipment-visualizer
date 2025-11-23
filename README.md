@@ -174,9 +174,9 @@ This project is part of the FOSSEE Winter Internship screening task.
 
 
 ## Contact
-- Developer: [Your Name]
-- Email: [Your Email]
-- GitHub: [Your GitHub Profile]
+- Developer: Rajat Pandey
+- Email: rajatpndey257@gmail.com
+- GitHub: https://github.com/Kevin1skyrj
 
 ## Acknowledgments
 - FOSSEE (Free and Open Source Software for Education)
