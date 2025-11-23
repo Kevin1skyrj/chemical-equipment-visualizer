@@ -53,15 +53,15 @@ python manage.py runserver
 ### Demo Credentials / Sharing Access
 
 - Run `python manage.py createsuperuser --username demo_admin` (replace `demo_admin` with any label you like) and set a password that you can share privately.
-- Use the same username/password pair inside both the web dashboard (login card) and the desktop client (either via environment variables or the credential prompt).
-- When submitting the screening task, include these demo credentials in your submission so evaluators can log in immediately without recreating users.
+- Use the same username/password pair inside both the web dashboard (login screen) and the desktop client (either via environment variables or the credential prompt).
+- When submitting the screening task, include these demo credentials in your submission so evaluators can log in immediately without recreating users. The login screen now shows the credential pair (if you bundle them via `VITE_API_USERNAME` / `VITE_API_PASSWORD`) so reviewers see exactly what to use.
 - Rotate or delete the demo account after the review period if you continue working on the project.
 
 ### Login & Per-user History
 
-- The **Backend Authentication** card now works as a login form. Enter valid Django credentials (or rely on `VITE_API_USERNAME`/`VITE_API_PASSWORD` during deployments) and click **Login & Save**. Values live only in the current browser profile.
+- The dashboard is gated behind a dedicated login page. Enter your Django credentials (or rely on `VITE_API_USERNAME`/`VITE_API_PASSWORD` during deployments) and click **Sign In**. Values live only in the current browser profile.
 - Each dataset belongs to the authenticated Django user. The API, web dashboard, and desktop client always filter responses to "your" uploads and keep the five most recent datasets **per user**.
-- Clearing or changing credentials refreshes the dashboard instantly so reviewers can switch accounts without reloading the page.
+- The login page shows two tips: hosted builds list the reviewer credentials that were bundled at build time, and local builds remind you to run `python manage.py createsuperuser`. Use the **Sign out** button in the dashboard header if you need to switch accounts.
 
 ### Environment Variables
 
@@ -79,7 +79,7 @@ cp .env.example .env  # optional: pre-fill Basic Auth credentials
 npm install
 npm run dev
 ```
-> Tip: If you don't want credentials baked into `.env`, launch the dev server and use the in-app **Backend Authentication** card to enter them. They are stored only in `localStorage` on that browser profile.
+> Tip: If you don't want credentials baked into `.env`, launch the dev server and sign in through the web login screen. The credentials stay in `localStorage` for that browser profile only.
 
 ### Frontend Desktop Setup
 ```bash
@@ -111,7 +111,7 @@ Use these steps when capturing screenshots or the final walk-through video:
 2. **Seed sample data** (optional if already done): `python manage.py seed_sample_data --username admin` (replace `admin` with any existing user).
 3. **Web app**:
 	- `cd frontend-web && npm install && npm run dev`.
-	- In the “Backend Authentication” (Login) card enter your Django username/password and click *Login & Save*.
+	- Visit the login screen, enter your Django username/password, and click *Sign In*.
 	- Upload `sample_equipment_data.csv`, show the summary cards, Chart.js bar chart, records table, PDF download, and history refresh.
 4. **Desktop app**:
 	- `cd frontend-desktop && .\.venv\Scripts\Activate.ps1 && pip install -r requirements.txt && python main.py`.

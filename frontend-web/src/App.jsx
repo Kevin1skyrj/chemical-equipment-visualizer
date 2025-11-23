@@ -2,7 +2,6 @@ import { useMemo, useState } from 'react'
 import UploadForm from './components/UploadForm'
 import LatestSummary from './components/LatestSummary'
 import HistoryList from './components/HistoryList'
-import CredentialsForm from './components/CredentialsForm'
 import LoginScreen from './components/LoginScreen'
 import useDatasets from './hooks/useDatasets.js'
 import useAuth from './hooks/useAuth.js'
@@ -34,13 +33,33 @@ const App = () => {
     refresh()
   }
 
+  const handleSignOut = () => {
+    clearCredentials()
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(HAS_UPLOAD_KEY)
+    }
+    setHasUploaded(false)
+    refresh()
+  }
+
   if (!isAuthenticated) {
-    return <LoginScreen apiBaseUrl={API_BASE_URL} onSave={saveCredentials} />
+    return <LoginScreen onSave={saveCredentials} />
   }
 
   return (
     <div className="min-h-screen bg-linear-to-br from-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-8">
+        {credentials?.username && (
+          <div className="flex justify-end">
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="text-sm text-blue-700 hover:text-blue-900 font-medium"
+            >
+              Sign out ({credentials.username})
+            </button>
+          </div>
+        )}
         <header className="text-center space-y-3 mb-6 bg-white rounded-2xl p-8 shadow-xl border border-blue-100">
           <div className="inline-block bg-blue-100 px-4 py-2 rounded-full mb-2">
             <p className="text-sm uppercase tracking-widest text-blue-700 font-bold">
@@ -55,21 +74,10 @@ const App = () => {
           </p>
         </header>
 
-        <CredentialsForm
-          credentials={credentials}
-          apiBaseUrl={API_BASE_URL}
-          onSave={saveCredentials}
-          onClear={() => {
-            clearCredentials()
-            refresh()
-          }}
-          onRefresh={refresh}
-        />
-
         <UploadForm
           onUploaded={handleUploadSuccess}
           disabled={!canUpload}
-          disabledMessage="Add backend credentials above to enable uploads."
+          disabledMessage="Sign in to enable uploads."
         />
 
         <LatestSummary dataset={latestForViewer} isLoading={isLoading} error={error} />

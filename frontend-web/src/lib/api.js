@@ -54,3 +54,14 @@ export const downloadDatasetReport = async (datasetId) => {
 
 export const getDatasetDetail = (datasetId) =>
   client.get(`/datasets/${datasetId}/`).then((res) => res.data)
+
+export const verifyCredentials = async (username, password) => {
+  if (!username || !password) {
+    throw new Error('Username and password are required for verification.')
+  }
+  const token = btoa(`${username}:${password}`)
+  await axios.get(`${API_BASE_URL}/datasets/history/`, {
+    headers: { Authorization: `Basic ${token}` },
+  })
+  return true
+}
