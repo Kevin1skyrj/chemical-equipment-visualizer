@@ -19,15 +19,6 @@ const readFromStorage = () => {
   return null
 }
 
-const getEnvCredentials = () => {
-  const username = import.meta.env.VITE_API_USERNAME
-  const password = import.meta.env.VITE_API_PASSWORD
-  if (username && password) {
-    return { username, password, source: 'env' }
-  }
-  return null
-}
-
 export const getAuthCredentials = () => {
   if (runtimeCredentials?.username && runtimeCredentials?.password) {
     return runtimeCredentials
@@ -36,11 +27,6 @@ export const getAuthCredentials = () => {
   if (stored) {
     runtimeCredentials = stored
     return stored
-  }
-  const envCredentials = getEnvCredentials()
-  if (envCredentials) {
-    runtimeCredentials = envCredentials
-    return envCredentials
   }
   return null
 }

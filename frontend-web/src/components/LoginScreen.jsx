@@ -2,11 +2,6 @@ import { useMemo, useState } from 'react'
 import { verifyCredentials } from '../lib/api.js'
 
 const LoginScreen = ({ onSave }) => {
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [status, setStatus] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
   const presetCredentials = useMemo(() => {
     const presetUser = import.meta.env?.VITE_API_USERNAME?.trim()
     const presetPass = import.meta.env?.VITE_API_PASSWORD?.trim()
@@ -15,6 +10,11 @@ const LoginScreen = ({ onSave }) => {
     }
     return null
   }, [])
+
+  const [username, setUsername] = useState(() => presetCredentials?.username ?? '')
+  const [password, setPassword] = useState(() => presetCredentials?.password ?? '')
+  const [status, setStatus] = useState(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleSubmit = async (event) => {
     event.preventDefault()
