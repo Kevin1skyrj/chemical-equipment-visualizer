@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import {
   clearAuthCredentials,
   getAuthCredentials,
@@ -8,9 +8,7 @@ import {
 const useAuth = () => {
   const [credentials, setCredentials] = useState(() => getAuthCredentials())
 
-  useEffect(() => {
-    setCredentials(getAuthCredentials())
-  }, [])
+  // credentials are initialized from storage on first render; no effect needed
 
   const save = useCallback((username, password) => {
     const trimmedUser = username?.trim()

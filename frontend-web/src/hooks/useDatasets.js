@@ -35,7 +35,11 @@ const useDatasets = (authKey) => {
   }, [authKey])
 
   useEffect(() => {
-    loadData()
+    const id = setTimeout(() => {
+      loadData()
+    }, 0)
+
+    return () => clearTimeout(id)
   }, [loadData])
 
   return { ...state, refresh: loadData }

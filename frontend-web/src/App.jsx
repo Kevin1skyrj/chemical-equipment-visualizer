@@ -3,8 +3,8 @@ import UploadForm from './components/UploadForm'
 import LatestSummary from './components/LatestSummary'
 import HistoryList from './components/HistoryList'
 import CredentialsForm from './components/CredentialsForm'
-import useDatasets from './hooks/useDatasets'
-import useAuth from './hooks/useAuth'
+import useDatasets from './hooks/useDatasets.js'
+import useAuth from './hooks/useAuth.js'
 
 const HAS_UPLOAD_KEY = 'cev-has-uploaded'
 
