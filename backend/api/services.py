@@ -81,7 +81,9 @@ def _compute_metrics(df: pd.DataFrame) -> Tuple[Dict, Dict]:
 
 
 @transaction.atomic
-def create_dataset_from_file(*, file_obj: BinaryIO, name: str | None = None) -> Dataset:
+def create_dataset_from_file(
+    *, file_obj: BinaryIO, owner, name: str | None = None
+) -> Dataset:
     """Parse the CSV, persist the dataset, and return the instance."""
 
     raw_bytes = file_obj.read()
@@ -99,6 +101,7 @@ def create_dataset_from_file(*, file_obj: BinaryIO, name: str | None = None) -> 
     stored_file.name = safe_filename
 
     dataset = Dataset.objects.create(
+        owner=owner,
         name=display_name,
         source_filename=safe_filename,
         original_file=stored_file,

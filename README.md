@@ -44,7 +44,7 @@ python -m venv .venv
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py createsuperuser  # basic-auth user for all APIs
-python manage.py seed_sample_data  # loads sample_equipment_data.csv
+python manage.py seed_sample_data --username admin  # loads sample_equipment_data.csv for an owner
 python manage.py runserver
 ```
 
@@ -53,9 +53,15 @@ python manage.py runserver
 ### Demo Credentials / Sharing Access
 
 - Run `python manage.py createsuperuser --username demo_admin` (replace `demo_admin` with any label you like) and set a password that you can share privately.
-- Use the same username/password pair inside both the web dashboard (credentials card) and the desktop client (either via environment variables or the credential prompt).
+- Use the same username/password pair inside both the web dashboard (login card) and the desktop client (either via environment variables or the credential prompt).
 - When submitting the screening task, include these demo credentials in your submission so evaluators can log in immediately without recreating users.
 - Rotate or delete the demo account after the review period if you continue working on the project.
+
+### Login & Per-user History
+
+- The **Backend Authentication** card now works as a login form. Enter valid Django credentials (or rely on `VITE_API_USERNAME`/`VITE_API_PASSWORD` during deployments) and click **Login & Save**. Values live only in the current browser profile.
+- Each dataset belongs to the authenticated Django user. The API, web dashboard, and desktop client always filter responses to "your" uploads and keep the five most recent datasets **per user**.
+- Clearing or changing credentials refreshes the dashboard instantly so reviewers can switch accounts without reloading the page.
 
 ### Environment Variables
 
@@ -102,10 +108,10 @@ python main.py
 Use these steps when capturing screenshots or the final walk-through video:
 
 1. **Start backend**: `cd backend && .\.venv\Scripts\Activate.ps1 && python manage.py runserver`.
-2. **Seed sample data** (optional if already done): `python manage.py seed_sample_data`.
+2. **Seed sample data** (optional if already done): `python manage.py seed_sample_data --username admin` (replace `admin` with any existing user).
 3. **Web app**:
 	- `cd frontend-web && npm install && npm run dev`.
-	- In the “Backend Authentication” card enter your Django username/password and click *Save Credentials*.
+	- In the “Backend Authentication” (Login) card enter your Django username/password and click *Login & Save*.
 	- Upload `sample_equipment_data.csv`, show the summary cards, Chart.js bar chart, records table, PDF download, and history refresh.
 4. **Desktop app**:
 	- `cd frontend-desktop && .\.venv\Scripts\Activate.ps1 && pip install -r requirements.txt && python main.py`.

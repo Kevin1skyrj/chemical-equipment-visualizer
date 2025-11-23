@@ -6,6 +6,8 @@ from .models import Dataset
 
 
 class DatasetSummarySerializer(serializers.ModelSerializer):
+    owner_username = serializers.CharField(source="owner.username", read_only=True)
+
     class Meta:
         model = Dataset
         fields = [
@@ -19,6 +21,7 @@ class DatasetSummarySerializer(serializers.ModelSerializer):
             "avg_temperature",
             "type_distribution",
             "metrics",
+            "owner_username",
         ]
 
 

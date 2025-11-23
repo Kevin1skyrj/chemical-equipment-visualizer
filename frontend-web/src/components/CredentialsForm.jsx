@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const CredentialsForm = ({ credentials, onSave, onClear, onRefresh }) => {
+const CredentialsForm = ({ credentials, onSave, onClear, onRefresh, apiBaseUrl }) => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [status, setStatus] = useState(null)
@@ -21,22 +21,23 @@ const CredentialsForm = ({ credentials, onSave, onClear, onRefresh }) => {
       <header className="flex items-center justify-between gap-3">
         <div>
           <p className="text-xs uppercase tracking-wide text-blue-600 font-semibold">
-            Backend Authentication
+            Login Required
           </p>
-          <h2 className="text-lg font-semibold">Connect to Django API</h2>
+          <h2 className="text-lg font-semibold">Sign in to the Django API</h2>
           <p className="text-sm text-gray-600">
-            Use the Basic Auth account you created via{' '}
-            <code>python manage.py createsuperuser</code>. The exact reviewer/demo values are
-            documented in the README under “Demo Credentials”. Stored locally in this browser only.
-            {credentials?.username && (
-              <span className="ml-1 text-gray-700 font-medium">
-                Currently connected as {credentials.username}.
-              </span>
-            )}
+            Enter the Basic Auth username/password created with{' '}
+            <code>python manage.py createsuperuser</code>. Requests are sent to{' '}
+            <span className="font-semibold">{apiBaseUrl}</span>.
           </p>
           <p className="text-xs text-gray-500 mt-1">
-            Need access? Ask your admin for the shared username/password or create a new Django
-            superuser and share it via the screening submission form.
+            {credentials?.username ? (
+              <span>
+                Signed in as <strong>{credentials.username}</strong>
+                {credentials?.source === 'env' && ' (deployment preset)'}.
+              </span>
+            ) : (
+              'Not signed in yet. Save valid credentials to unlock uploads and history.'
+            )}
           </p>
         </div>
         {credentials?.username && (
@@ -78,7 +79,7 @@ const CredentialsForm = ({ credentials, onSave, onClear, onRefresh }) => {
             type="submit"
             className="px-5 py-2.5 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
           >
-            Save Credentials
+            Login &amp; Save
           </button>
           {status?.message && (
             <span

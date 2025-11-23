@@ -55,6 +55,9 @@ const HistoryList = ({ history = [], onRefresh }) => {
           Refresh
         </button>
       </header>
+      <p className="text-xs text-gray-500 mt-1">
+        Showing the five most recent uploads associated with your current login.
+      </p>
 
       {error && <p className="text-sm text-red-600 mt-2">{error}</p>}
 

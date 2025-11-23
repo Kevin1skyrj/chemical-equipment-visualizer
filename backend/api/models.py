@@ -1,5 +1,6 @@
 from uuid import uuid4
 
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
@@ -13,6 +14,13 @@ class Dataset(models.Model):
 	"""Persist parsed CSV data, summary metrics, and original file reference."""
 
 	id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+	owner = models.ForeignKey(
+		settings.AUTH_USER_MODEL,
+		on_delete=models.CASCADE,
+		related_name="datasets",
+		null=True,
+		blank=True,
+	)
 	name = models.CharField(max_length=255)
 	source_filename = models.CharField(max_length=255)
 	original_file = models.FileField(upload_to=dataset_upload_path)
@@ -34,7 +42,10 @@ class Dataset(models.Model):
 
 	def save(self, *args, **kwargs):
 		super().save(*args, **kwargs)
-		preserved_ids = (
-			Dataset.objects.order_by("-uploaded_at").values_list("id", flat=True)[:5]
-		)
-		Dataset.objects.exclude(id__in=preserved_ids).delete()
+		if self.owner_id:
+			preserved_ids = (
+				Dataset.objects.filter(owner=self.owner)
+				.order_by("-uploaded_at")
+				.values_list("id", flat=True)[:5]
+			)
+			Dataset.objects.filter(owner=self.owner).exclude(id__in=preserved_ids).delete()

@@ -5,6 +5,7 @@ import HistoryList from './components/HistoryList'
 import CredentialsForm from './components/CredentialsForm'
 import useDatasets from './hooks/useDatasets.js'
 import useAuth from './hooks/useAuth.js'
+import { API_BASE_URL } from './lib/api.js'
 
 const HAS_UPLOAD_KEY = 'cev-has-uploaded'
 
@@ -32,7 +33,7 @@ const App = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-linear-to-br from-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-8">
         <header className="text-center space-y-3 mb-6 bg-white rounded-2xl p-8 shadow-xl border border-blue-100">
           <div className="inline-block bg-blue-100 px-4 py-2 rounded-full mb-2">
@@ -50,6 +51,7 @@ const App = () => {
 
         <CredentialsForm
           credentials={credentials}
+          apiBaseUrl={API_BASE_URL}
           onSave={saveCredentials}
           onClear={() => {
             clearCredentials()
