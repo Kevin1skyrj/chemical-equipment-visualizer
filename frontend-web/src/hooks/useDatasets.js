@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { getDatasetHistory, getLatestDataset } from '../lib/api.js'
+import { API_BASE_URL, getDatasetHistory, getLatestDataset } from '../lib/api.js'
 
 const initialState = {
   latest: null,
@@ -30,7 +30,15 @@ const useDatasets = (authKey) => {
 
       setState({ latest, history, isLoading: false, error: null })
     } catch (error) {
-      setState({ ...initialState, error: error.message, isLoading: false })
+      let message = 'Unable to fetch datasets. Please try again.'
+      if (error?.response?.status === 401) {
+        message = 'Invalid username or password. Double-check your Django credentials.'
+      } else if (error?.message === 'Network Error') {
+        message = `Cannot reach backend at ${API_BASE_URL}. Is it running and reachable?`
+      } else if (error?.response?.data?.detail) {
+        message = error.response.data.detail
+      }
+      setState({ ...initialState, error: message, isLoading: false })
     }
   }, [authKey])
 
