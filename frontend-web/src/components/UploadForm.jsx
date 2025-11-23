@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react'
-import { uploadDataset } from '../lib/api'
+import { uploadDataset } from '../lib/api.js'
 
 const UploadForm = ({ onUploaded, disabled = false, disabledMessage = '' }) => {
   const [name, setName] = useState('')
