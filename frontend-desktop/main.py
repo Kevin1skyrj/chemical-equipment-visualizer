@@ -11,8 +11,8 @@ from PyQt5.QtCore import Qt
 from PyQt5.QtWidgets import (
     QApplication,
     QFileDialog,
+    QFrame,
     QGridLayout,
-    QGroupBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -30,6 +30,7 @@ from PyQt5.QtWidgets import (
 )
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
+from styles import DASHBOARD_QSS
 
 API_BASE_URL = os.getenv("API_BASE_URL", "http://127.0.0.1:8000/api")
 API_USERNAME = os.getenv("API_USERNAME")
@@ -77,20 +78,24 @@ def build_auth_headers(parent=None):
 
 class DistributionCanvas(FigureCanvas):
     def __init__(self):
-        self.figure = Figure(figsize=(5, 3))
+        self.figure = Figure(figsize=(5, 3), facecolor="none")
         super().__init__(self.figure)
         self.axes = self.figure.add_subplot(111)
+        self.axes.set_facecolor("none")
+        for spine in self.axes.spines.values():
+            spine.set_color("#cbd5f5")
+            spine.set_linewidth(0.8)
 
     def update_chart(self, distribution: dict):
         self.axes.clear()
+        self.axes.set_facecolor("none")
         if not distribution:
             self.axes.text(0.5, 0.5, "No data", ha="center", va="center")
         else:
             labels = list(distribution.keys())
             values = list(distribution.values())
-            self.axes.bar(labels, values, color="#2563eb")
+            self.axes.bar(labels, values, color="#2563eb", edgecolor="#1d4ed8")
             self.axes.set_ylabel("Count")
-            self.axes.set_title("Equipment Type Distribution")
             self.axes.tick_params(axis="x", rotation=30)
         self.figure.tight_layout()
         self.draw_idle()
@@ -110,13 +115,88 @@ class DatasetDashboard(QMainWindow):
         central = QWidget()
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
-        layout.setSpacing(16)
+        layout.setSpacing(18)
 
-        self.upload_group = self._build_upload_group()
-        layout.addWidget(self.upload_group)
+        layout.addWidget(self._build_hero_header())
+        layout.addWidget(self._build_upload_card())
+        layout.addWidget(self._build_summary_card())
+        layout.addWidget(self._build_chart_card())
+        layout.addWidget(self._build_records_card())
+        layout.addWidget(self._build_history_card())
 
-        summary_section = QGroupBox("Latest Dataset Summary")
-        summary_layout = QGridLayout(summary_section)
+    def _styled_card(self, object_name="Card"):
+        frame = QFrame()
+        frame.setObjectName(object_name)
+        return frame
+
+    def _build_hero_header(self):
+        frame = self._styled_card("HeroCard")
+        layout = QVBoxLayout(frame)
+        layout.setContentsMargins(28, 28, 28, 28)
+        layout.setSpacing(10)
+
+        eyebrow = QLabel("Desktop Dashboard")
+        eyebrow.setObjectName("HeroEyebrow")
+        title = QLabel("Chemical Equipment Parameter Visualizer")
+        title.setObjectName("HeroTitle")
+        subtitle = QLabel(
+            "Upload CSVs, explore real-time summaries, and download PDF insights directly from your desktop."
+        )
+        subtitle.setWordWrap(True)
+        subtitle.setObjectName("HeroSubtitle")
+        meta = QLabel(f"Connected to: {API_BASE_URL}")
+        meta.setObjectName("HeroMeta")
+
+        layout.addWidget(eyebrow)
+        layout.addWidget(title)
+        layout.addWidget(subtitle)
+        layout.addWidget(meta)
+        return frame
+
+    def _build_upload_card(self):
+        frame = self._styled_card()
+        grid = QGridLayout(frame)
+        grid.setContentsMargins(24, 24, 24, 24)
+        grid.setHorizontalSpacing(14)
+        grid.setVerticalSpacing(14)
+
+        title = QLabel("Upload CSV to Backend")
+        title.setObjectName("SectionTitle")
+        subtitle = QLabel("Give the dataset a friendly name, pick a CSV, and send it to the API in one click.")
+        subtitle.setObjectName("SectionSubtitle")
+        subtitle.setWordWrap(True)
+
+        self.name_input = QLineEdit()
+        self.name_input.setPlaceholderText("e.g., Sample Equipment Data")
+        self.file_input = QLineEdit()
+        self.file_input.setReadOnly(True)
+        browse_button = QPushButton("Browse…")
+        browse_button.setProperty("variant", "ghost")
+        browse_button.clicked.connect(self._pick_file)
+        upload_button = QPushButton("Upload")
+        upload_button.clicked.connect(self._upload_file)
+
+        grid.addWidget(title, 0, 0, 1, 4)
+        grid.addWidget(subtitle, 1, 0, 1, 4)
+        grid.addWidget(QLabel("Dataset Name"), 2, 0)
+        grid.addWidget(self.name_input, 2, 1, 1, 3)
+        grid.addWidget(QLabel("CSV Path"), 3, 0)
+        grid.addWidget(self.file_input, 3, 1, 1, 2)
+        grid.addWidget(browse_button, 3, 3)
+        grid.addWidget(upload_button, 4, 3)
+        return frame
+
+    def _build_summary_card(self):
+        frame = self._styled_card()
+        grid = QGridLayout(frame)
+        grid.setContentsMargins(24, 24, 24, 24)
+        grid.setHorizontalSpacing(12)
+        grid.setVerticalSpacing(16)
+
+        header = QLabel("Latest Dataset Summary")
+        header.setObjectName("SectionTitle")
+        grid.addWidget(header, 0, 0, 1, 4)
+
         self.summary_labels = {
             "records": QLabel("-"),
             "flowrate": QLabel("-"),
@@ -124,42 +204,72 @@ class DatasetDashboard(QMainWindow):
             "temperature": QLabel("-"),
             "uploaded": QLabel("-"),
         }
-        summary_layout.addWidget(QLabel("Uploaded"), 0, 0)
-        summary_layout.addWidget(self.summary_labels["uploaded"], 0, 1)
-        summary_layout.addWidget(QLabel("Total Records"), 0, 2)
-        summary_layout.addWidget(self.summary_labels["records"], 0, 3)
-        summary_layout.addWidget(QLabel("Avg Flowrate"), 1, 0)
-        summary_layout.addWidget(self.summary_labels["flowrate"], 1, 1)
-        summary_layout.addWidget(QLabel("Avg Pressure"), 1, 2)
-        summary_layout.addWidget(self.summary_labels["pressure"], 1, 3)
-        summary_layout.addWidget(QLabel("Avg Temperature"), 2, 0)
-        summary_layout.addWidget(self.summary_labels["temperature"], 2, 1)
-        layout.addWidget(summary_section)
 
+        grid.addWidget(QLabel("Uploaded"), 1, 0)
+        grid.addWidget(self.summary_labels["uploaded"], 1, 1)
+        grid.addWidget(QLabel("Total Records"), 1, 2)
+        grid.addWidget(self.summary_labels["records"], 1, 3)
+        grid.addWidget(QLabel("Avg Flowrate"), 2, 0)
+        grid.addWidget(self.summary_labels["flowrate"], 2, 1)
+        grid.addWidget(QLabel("Avg Pressure"), 2, 2)
+        grid.addWidget(self.summary_labels["pressure"], 2, 3)
+        grid.addWidget(QLabel("Avg Temperature"), 3, 0)
+        grid.addWidget(self.summary_labels["temperature"], 3, 1)
+        return frame
+
+    def _build_chart_card(self):
+        frame = self._styled_card()
+        vbox = QVBoxLayout(frame)
+        vbox.setContentsMargins(24, 24, 24, 24)
+        vbox.setSpacing(12)
+        header = QLabel("Equipment Type Distribution")
+        header.setObjectName("SectionTitle")
+        vbox.addWidget(header)
         self.chart = DistributionCanvas()
-        layout.addWidget(self.chart)
+        self.chart.setMinimumHeight(260)
+        vbox.addWidget(self.chart)
+        return frame
 
+    def _build_records_card(self):
+        frame = self._styled_card()
+        vbox = QVBoxLayout(frame)
+        vbox.setContentsMargins(24, 24, 24, 24)
+        vbox.setSpacing(12)
+        header = QLabel("Detailed Records (first 100)")
+        header.setObjectName("SectionTitle")
+        vbox.addWidget(header)
         self.records_table = QTableWidget()
         self.records_table.setAlternatingRowColors(True)
         self.records_table.setColumnCount(0)
         self.records_table.setRowCount(0)
-        self.records_table.setMinimumHeight(200)
-        layout.addWidget(self.records_table)
+        self.records_table.setMinimumHeight(220)
+        vbox.addWidget(self.records_table)
+        return frame
 
-        history_section = QGroupBox("Upload History (Last 5)")
-        history_layout = QVBoxLayout(history_section)
-        history_buttons = QHBoxLayout()
+    def _build_history_card(self):
+        frame = self._styled_card()
+        vbox = QVBoxLayout(frame)
+        vbox.setContentsMargins(24, 24, 24, 24)
+        vbox.setSpacing(16)
+        header_row = QHBoxLayout()
+        title = QLabel("Upload History (Last 5)")
+        title.setObjectName("SectionTitle")
+        header_row.addWidget(title)
+        header_row.addStretch(1)
+
         self.refresh_button = QPushButton("Refresh")
+        self.refresh_button.setProperty("variant", "ghost")
         self.refresh_button.clicked.connect(self.refresh_dashboard)
-        self.report_button = QPushButton("Download PDF for Selected")
+        self.report_button = QPushButton("Download PDF")
         self.report_button.clicked.connect(self.download_selected_report)
-        history_buttons.addWidget(self.refresh_button)
-        history_buttons.addWidget(self.report_button)
-        history_layout.addLayout(history_buttons)
+        header_row.addWidget(self.refresh_button)
+        header_row.addWidget(self.report_button)
+        vbox.addLayout(header_row)
+
         self.history_list = QListWidget()
         self.history_list.itemSelectionChanged.connect(self._handle_history_selection)
-        history_layout.addWidget(self.history_list)
-        layout.addWidget(history_section)
+        vbox.addWidget(self.history_list)
+        return frame
 
     def _build_upload_group(self):
         group = QGroupBox("Upload CSV to Backend")
@@ -329,6 +439,7 @@ class DatasetDashboard(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
+    app.setStyleSheet(DASHBOARD_QSS)
     window = DatasetDashboard()
     window.show()
     sys.exit(app.exec_())
